@@ -26,3 +26,5 @@ Na vrhu aplikacije nalazi se informacija o ukupnom broju recepata.
 Aplikacija je izgrađena pomoću Vue.js, HTML-a i CSS-a.
 Podaci o receptima pohranjuju se dinamički i reflektiraju trenutno stanje aplikacije.
 Ažuriranje ukupnog broja recepata automatski se odvija tijekom dodavanja, uređivanja i brisanja recepata.
+
+Link na aplikaciju: cyan-enrica-4.tiiny.site
