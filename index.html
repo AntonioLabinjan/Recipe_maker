@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Galerija recepata</title>
+	<style>
+		body {
+    background-color: rgb(173, 216, 230); 
+    font-family: Arial, sans-serif; 
+}
+
+
+		#app {
+			max-width: 800px; 
+			margin: 0 auto; 
+			padding: 20px; 
+		}
+
+		.recipe {
+			display: inline-block;
+			margin: 10px;
+			vertical-align: top;
+			background-color: #ffffff; 
+			padding: 15px; 
+			border-radius: 5px; 
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+		}
+
+input, textarea {
+width: 100%;
+    padding: 8px;
+    margin-bottom: 10px;
+    box-sizing: border-box;
+}
+
+button {
+    padding: 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+	</style>
+</head>
+<body>
+
+<div id="app">
+	<p>Ukupan broj recepata: {{ totalRecipes }}</p>
+
+	<div v-for="(recipe, index) in recipes" :key="index" class="recipe">
+		<img :src="recipe.image" alt="Recipe Image" width="200">
+		<h2>{{ recipe.title }}</h2>
+		<p><strong>Sastojci:</strong> {{ recipe.ingredients }}</p>
+		<p><strong>Trajanje kuhanja:</strong> {{ recipe.cookingTime }}</p>
+		<p><strong>Opis:</strong> {{ recipe.description }}</p>
+		<button @click="editRecipe(index)">Uredi</button>
+		<button @click="deleteRecipe(index)">Obriši</button>
+	</div>
+	
+	<div v-if="editingIndex !== null">
+		<center><h2>Uredi recept</h2></center>
+		<label for="editTitle">Naslov:</label>
+		<input type="text" id="editTitle" v-model="editedRecipe.title">
+		<label for="editImage">Slika URL:</label>
+		<input type="text" id="editImage" v-model="editedRecipe.image">
+		<label for="editIngredients">Sastojci:</label>
+		<textarea id="editIngredients" v-model="editedRecipe.ingredients"></textarea>
+		<label for="editCookingTime">Trajanje kuhanja:</label>
+		<input type="text" id="editCookingTime" v-model="editedRecipe.cookingTime">
+		<label for="editDescription">Opis:</label>
+		<textarea id="editDescription" v-model="editedRecipe.description"></textarea>
+		<button @click="saveEdit">Spremi</button>
+	</div>
+	
+	<div>
+		<center><h2>Dodaj novi recept</h2></center>
+		<label for="newTitle">Naslov:</label>
+		<input type="text" id="newTitle" v-model="newRecipe.title">
+		<label for="newImage">Slika URL:</label>
+		<input type="text" id="newImage" v-model="newRecipe.image">
+		<label for="newIngredients">Sastojci:</label>
+		<textarea id="newIngredients" v-model="newRecipe.ingredients"></textarea>
+		<label for="newCookingTime">Trajanje kuhanja:</label>
+		<input type="text" id="newCookingTime" v-model="newRecipe.cookingTime">
+		<label for="newDescription">Opis:</label>
+		<textarea id="newDescription" v-model="newRecipe.description"></textarea>
+		<button @click="addRecipe">Dodaj recept</button>
+		<p v-if="validationError" style="color: red;">{{ validationError }}</p>
+	</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<script>
+new Vue({
+	el: '#app',
+	data: {
+		recipes: [],
+		editingIndex: null,
+		editedRecipe: {
+			title: '',
+			image: '',
+			ingredients: '',
+			cookingTime: '',
+			description: ''
+		},
+		newRecipe: {
+			title: '',
+			image: '',
+			ingredients: '',
+			cookingTime: '',
+			description: ''
+		},
+		validationError: '',
+		totalRecipes: 0 
+	},
+	methods: {
+		editRecipe(index) {
+			this.editingIndex = index;
+			this.editedRecipe = { ...this.recipes[index] };
+		},
+		saveEdit() {
+			if (this.validateRecipe(this.editedRecipe)) {
+				if (this.editingIndex !== null) {
+					this.$set(this.recipes, this.editingIndex, { ...this.editedRecipe });
+					this.editingIndex = null;
+				}
+				this.validationError = '';
+				this.updateTotalRecipes(); 
+			} else {
+				this.validationError = 'Molimo ispunite sva obavezna polja.';
+			}
+		},
+		deleteRecipe(index) {
+			this.recipes.splice(index, 1);
+			this.updateTotalRecipes(); 
+		},
+		addRecipe() {
+			if (this.validateRecipe(this.newRecipe)) {
+				this.recipes.push({ ...this.newRecipe });
+				this.newRecipe = {
+					title: '',
+					image: '',
+					ingredients: '',
+					cookingTime: '',
+					description: ''
+				};
+				this.validationError = '';
+				this.updateTotalRecipes(); 
+			} else {
+				this.validationError = 'Molimo ispunite sva obavezna polja.';
+			}
+		},
+		validateRecipe(recipe) {
+			return recipe.title !== '' && recipe.ingredients !== '' && recipe.cookingTime !== '' && recipe.description !== '';
+		},
+		updateTotalRecipes() {
+			this.totalRecipes = this.recipes.length; 
+		}
+	}
+});
+</script>
+
+</body>
+</html>
